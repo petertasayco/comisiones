@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Comisiones - Ranking UP MOVIL</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f4f4;
+    margin:0;
+}
+
+h1{
+    background:#0033A0;
+    color:white;
+    text-align:center;
+    padding:15px;
+    margin:0;
+}
+
+table{
+    width:95%;
+    margin:20px auto;
+    border-collapse: collapse;
+    background:white;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+th{
+    background:#FFDD00;
+    padding:10px;
+}
+
+td{
+    padding:8px;
+    border-bottom:1px solid #ddd;
+    text-align:center;
+}
+
+tr:hover{
+    background:#f1f1f1;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📊 RANKING UP MOVIL - TIEMPO REAL</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>DNI</th>
+            <th>ASESOR</th>
+            <th>UP MOVIL</th>
+            <th>MIGRACIONES</th>
+            <th>UP HOGAR</th>
+        </tr>
+    </thead>
+
+    <tbody id="data"></tbody>
+</table>
+
+<script>
+
+const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQkImtZjO9RXKb6t--VplvUQl7KAjdN4nMXmJkwjfUv0H8ZrfmBMD704_JGjbKsCa1joz7tqWbnyetx/pub?gid=1388046897&single=true&output=csv";
+
+fetch(url)
+.then(response => response.text())
+.then(csv => {
+
+    const rows = csv.trim().split("\n");
+    let html = "";
+
+    // saltar encabezado (fila 1)
+    for(let i = 1; i < rows.length; i++){
+
+        let cols = rows[i].split(",");
+
+        // evitar filas vacías
+        if(cols.length < 5) continue;
+
+        html += `
+        <tr>
+            <td>${cols[0]}</td>
+            <td>${cols[1]}</td>
+            <td>${cols[2]}</td>
+            <td>${cols[3]}</td>
+            <td>${cols[4]}</td>
+        </tr>
+        `;
+    }
+
+    document.getElementById("data").innerHTML = html;
+})
+.catch(error => {
+    console.error("Error cargando CSV:", error);
+});
+
+</script>
+
+</body>
+</html>
