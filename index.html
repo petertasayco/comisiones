@@ -66,6 +66,14 @@ tr:hover{
 
 const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQkImtZjO9RXKb6t--VplvUQl7KAjdN4nMXmJkwjfUv0H8ZrfmBMD704_JGjbKsCa1joz7tqWbnyetx/pub?gid=1388046897&single=true&output=csv";
 
+// orden fijo de supervisores
+const ordenSupervisores = [
+    "PETER TASAYCO",
+    "ISABEL PEREYRA",
+    "JOSE ALVAREZ",
+    "PEDRO LLAZA"
+];
+
 function cargarDatos(){
 
 fetch(url + "&t=" + Date.now())
@@ -76,7 +84,7 @@ fetch(url + "&t=" + Date.now())
 
     let data = [];
 
-    // 1. convertir CSV en objetos
+    // convertir CSV a objetos
     for(let i = 1; i < rows.length; i++){
 
         let c = rows[i].split(",");
@@ -85,11 +93,14 @@ fetch(url + "&t=" + Date.now())
 
         data.push({
             supervisor: c[0],
-            asesor: c[1]
+            asesor: c[1],
+            upMovil: c[2],
+            migraciones: c[3],
+            upHogar: c[4]
         });
     }
 
-    // 2. agrupar por supervisor
+    // agrupar por supervisor
     let grupos = {};
 
     data.forEach(item => {
@@ -98,32 +109,21 @@ fetch(url + "&t=" + Date.now())
             grupos[item.supervisor] = [];
         }
 
-        grupos[item.supervisor].push(item.asesor);
+        grupos[item.supervisor].push(item);
     });
 
-    // 3. construir HTML estilo lista
+    // construir HTML ordenado
     let html = "";
 
-    for(let sup in grupos){
+    ordenSupervisores.forEach(sup => {
+
+        if(!grupos[sup]) return;
 
         html += `
         <tr>
-            <td colspan="5" style="
-                background:#0033A0;
-                color:white;
-                font-weight:bold;
-                text-align:left;
-                padding:10px;
-                font-size:16px;
-            ">
+            <td colspan="5" style="background:#0033A0;color:white;font-weight:bold;text-align:left;padding:10px;">
                 ${sup}
             </td>
-        </tr>
-        `;
-
-        html += `
-        <tr>
-            <td colspan="5" style="padding:5px;"></td>
         </tr>
         `;
 
@@ -131,26 +131,29 @@ fetch(url + "&t=" + Date.now())
 
             html += `
             <tr>
-                <td colspan="5" style="
-                    text-align:left;
-                    padding-left:25px;
-                ">
-                    - ${a}
-                </td>
+                <td></td>
+                <td style="text-align:left;">${a.asesor}</td>
+                <td>${a.upMovil}</td>
+                <td>${a.migraciones}</td>
+                <td>${a.upHogar}</td>
             </tr>
             `;
         });
-    }
+
+    });
 
     document.getElementById("data").innerHTML = html;
 
 })
-.catch(err => console.error(err));
+.catch(err => console.error("Error cargando CSV:", err));
 
 }
 
+// primera carga
 cargarDatos();
-setInterval(cargarDatos, 30000);
+
+// actualización automática cada 30 segundos
+setInterval(cargarDatos, 10000);
 
 </script>
 
