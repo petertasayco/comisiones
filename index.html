@@ -68,41 +68,88 @@ const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQkImtZjO9RXKb6t--V
 
 function cargarDatos(){
 
-    fetch(url + "&t=" + Date.now())
-    .then(response => response.text())
-    .then(csv => {
+fetch(url + "&t=" + Date.now())
+.then(r => r.text())
+.then(csv => {
 
-        const rows = csv.trim().split("\n");
-        let html = "";
+    const rows = csv.trim().split("\n");
 
-        for(let i = 1; i < rows.length; i++){
+    let data = [];
 
-            let cols = rows[i].split(",");
+    // 1. convertir CSV en objetos
+    for(let i = 1; i < rows.length; i++){
 
-            if(cols.length < 5) continue;
+        let c = rows[i].split(",");
+
+        if(c.length < 5) continue;
+
+        data.push({
+            supervisor: c[0],
+            asesor: c[1]
+        });
+    }
+
+    // 2. agrupar por supervisor
+    let grupos = {};
+
+    data.forEach(item => {
+
+        if(!grupos[item.supervisor]){
+            grupos[item.supervisor] = [];
+        }
+
+        grupos[item.supervisor].push(item.asesor);
+    });
+
+    // 3. construir HTML estilo lista
+    let html = "";
+
+    for(let sup in grupos){
+
+        html += `
+        <tr>
+            <td colspan="5" style="
+                background:#0033A0;
+                color:white;
+                font-weight:bold;
+                text-align:left;
+                padding:10px;
+                font-size:16px;
+            ">
+                ${sup}
+            </td>
+        </tr>
+        `;
+
+        html += `
+        <tr>
+            <td colspan="5" style="padding:5px;"></td>
+        </tr>
+        `;
+
+        grupos[sup].forEach(a => {
 
             html += `
             <tr>
-                <td>${cols[0]}</td>
-                <td>${cols[1]}</td>
-                <td>${cols[2]}</td>
-                <td>${cols[3]}</td>
-                <td>${cols[4]}</td>
+                <td colspan="5" style="
+                    text-align:left;
+                    padding-left:25px;
+                ">
+                    - ${a}
+                </td>
             </tr>
             `;
-        }
+        });
+    }
 
-        document.getElementById("data").innerHTML = html;
-    })
-    .catch(error => {
-        console.error("Error cargando CSV:", error);
-    });
+    document.getElementById("data").innerHTML = html;
+
+})
+.catch(err => console.error(err));
+
 }
 
-// Primera carga
 cargarDatos();
-
-// Actualizar cada 30 segundos
 setInterval(cargarDatos, 30000);
 
 </script>
