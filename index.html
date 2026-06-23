@@ -51,7 +51,6 @@ tr:hover{
 <table>
     <thead>
         <tr>
-            <th>DNI</th>
             <th>ASESOR</th>
             <th>UP MOVIL</th>
             <th>MIGRACIONES</th>
@@ -66,7 +65,6 @@ tr:hover{
 
 const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQkImtZjO9RXKb6t--VplvUQl7KAjdN4nMXmJkwjfUv0H8ZrfmBMD704_JGjbKsCa1joz7tqWbnyetx/pub?gid=1388046897&single=true&output=csv";
 
-// orden fijo de supervisores
 const ordenSupervisores = [
     "PETER TASAYCO",
     "ISABEL PEREYRA",
@@ -87,20 +85,20 @@ fetch(url + "&t=" + Date.now())
     // convertir CSV a objetos
     for(let i = 1; i < rows.length; i++){
 
-    let c = rows[i].split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
+        let c = rows[i].split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
 
-    if(!c[0] || !c[1]) continue;
+        if(!c[0] || !c[1]) continue;
 
-    data.push({
-        supervisor: c[0],
-        asesor: c[1],
-        upMovil: c[2] || 0,
-        migraciones: c[3] || 0,
-        upHogar: c[4] || 0
-    });
-}
+        data.push({
+            supervisor: c[0],
+            asesor: c[1],
+            upMovil: c[2] || 0,
+            migraciones: c[3] || 0,
+            upHogar: c[4] || 0
+        });
+    }
 
-    // agrupar por supervisor
+    // agrupar
     let grupos = {};
 
     data.forEach(item => {
@@ -112,16 +110,20 @@ fetch(url + "&t=" + Date.now())
         grupos[item.supervisor].push(item);
     });
 
-    // construir HTML ordenado
     let html = "";
 
+    // ordenar supervisores
     ordenSupervisores.forEach(sup => {
 
         if(!grupos[sup]) return;
 
+        let totalMovil = 0;
+        let totalMigraciones = 0;
+        let totalHogar = 0;
+
         html += `
         <tr>
-            <td colspan="5" style="background:#0033A0;color:white;font-weight:bold;text-align:left;padding:10px;">
+            <td colspan="4" style="background:#0033A0;color:white;font-weight:bold;text-align:left;padding:10px;">
                 ${sup}
             </td>
         </tr>
@@ -129,17 +131,41 @@ fetch(url + "&t=" + Date.now())
 
         grupos[sup].forEach(a => {
 
+            let movil = Number(a.upMovil) || 0;
+            let migra = Number(a.migraciones) || 0;
+            let hogar = Number(a.upHogar) || 0;
+
+            totalMovil += movil;
+            totalMigraciones += migra;
+            totalHogar += hogar;
+
             html += `
             <tr>
-                <td></td>
                 <td style="text-align:left;">${a.asesor}</td>
-                <td>${a.upMovil}</td>
-                <td>${a.migraciones}</td>
-                <td>${a.upHogar}</td>
+                <td>${movil}</td>
+                <td>${migra}</td>
+                <td>${hogar}</td>
             </tr>
             `;
         });
 
+        // TOTAL EN ROJO
+        html += `
+        <tr>
+            <td colspan="4" style="
+                background:#d60000;
+                color:white;
+                font-weight:bold;
+                text-align:left;
+                padding:10px;
+            ">
+                TOTAL ${sup} |
+                UP MOVIL: ${totalMovil} |
+                MIGRACIONES: ${totalMigraciones} |
+                UP HOGAR: ${totalHogar}
+            </td>
+        </tr>
+        `;
     });
 
     document.getElementById("data").innerHTML = html;
@@ -149,15 +175,13 @@ fetch(url + "&t=" + Date.now())
 
 }
 
-// primera carga
+// carga inicial
 cargarDatos();
 
-// actualización automática cada 30 segundos
+// refresh automático
 setInterval(cargarDatos, 10000);
 
 </script>
 
 </body>
 </html>
-
-
