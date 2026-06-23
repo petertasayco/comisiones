@@ -87,18 +87,18 @@ fetch(url + "&t=" + Date.now())
     // convertir CSV a objetos
     for(let i = 1; i < rows.length; i++){
 
-        let c = rows[i].split(",");
+    let c = rows[i].split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
 
-        if(c.length < 5) continue;
+    if(!c[0] || !c[1]) continue;
 
-        data.push({
-            supervisor: c[0],
-            asesor: c[1],
-            upMovil: c[2],
-            migraciones: c[3],
-            upHogar: c[4]
-        });
-    }
+    data.push({
+        supervisor: c[0],
+        asesor: c[1],
+        upMovil: c[2] || 0,
+        migraciones: c[3] || 0,
+        upHogar: c[4] || 0
+    });
+}
 
     // agrupar por supervisor
     let grupos = {};
