@@ -46,7 +46,7 @@ tr:hover{
 
 <body>
 
-<h1>📊 RANKING UP MOVIL - TIEMPO REAL</h1>
+<h1>📊 RANKING DE COMISIONES MENSUALES</h1>
 
 <table>
     <thead>
@@ -179,7 +179,60 @@ fetch(url + "&t=" + Date.now())
 cargarDatos();
 
 // refresh automático
-setInterval(cargarDatos, 10000);
+setInterval(cargarDatos, 30000);
+function autoScroll() {
+
+    const duracion = 20000; // 20 segundos
+
+    const alturaTotal =
+        document.documentElement.scrollHeight - window.innerHeight;
+
+    if (alturaTotal <= 0) return;
+
+    const inicio = Date.now();
+
+    function animar() {
+
+        const tiempoTranscurrido = Date.now() - inicio;
+
+        const progreso = Math.min(
+            tiempoTranscurrido / duracion,
+            1
+        );
+
+        window.scrollTo(
+            0,
+            alturaTotal * progreso
+        );
+
+        if (progreso < 1) {
+
+            requestAnimationFrame(animar);
+
+        } else {
+
+            // esperar 3 segundos abajo
+            setTimeout(() => {
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+
+                // esperar 2 segundos arriba
+                setTimeout(autoScroll, 2000);
+
+            }, 3000);
+
+        }
+    }
+
+    animar();
+}
+
+// iniciar después de cargar datos
+setTimeout(autoScroll, 3000);
+
 
 </script>
 
