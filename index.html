@@ -29,15 +29,15 @@ table{
 
 th{
     background:#FFDD00;
-    padding:12px;
-    font-size:24px;   /* encabezados */
+    padding:14px;
+    font-size: 32px;
 }
 
 td{
-    padding:12px;
+    padding:14px;
     border-bottom:1px solid #ddd;
     text-align:center;
-    font-size:22px;   /* nombres y números */
+    font-size: 30px;
     font-weight:bold;
 }
 
@@ -126,7 +126,7 @@ fetch(url + "&t=" + Date.now())
 
         html += `
         <tr>
-            <td colspan="4" style="background:#0033A0;color:white;font-weight:bold;text-align:left;padding:10px;">
+            <td colspan="4" style="background:#0033A0;color:white;font-weight:bold;text-align:left;padding:12px;font-size:30px;">
                 ${sup}
             </td>
         </tr>
@@ -156,12 +156,13 @@ fetch(url + "&t=" + Date.now())
         html += `
         <tr>
             <td colspan="4" style="
-                background:#d60000;
-                color:white;
-                font-weight:bold;
-                text-align:left;
-                padding:10px;
-            ">
+    background:#d60000;
+    color:white;
+    font-weight:bold;
+    text-align:left;
+    padding:12px;
+    font-size:28px;
+">
                 TOTAL ${sup} |
                 UP MOVIL: ${totalMovil} |
                 MIGRACIONES: ${totalMigraciones} |
